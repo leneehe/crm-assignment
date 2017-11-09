@@ -116,6 +116,8 @@ class Contact
       self.email = value
     elsif attribute == "note"
       self.note = value
+    else
+      puts "Invalid entry"
     end
 
   end
