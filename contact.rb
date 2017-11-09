@@ -28,12 +28,13 @@ class Contact
   # This method should accept an id as an argument
   # and return the contact who has that id
   def self.find(by_id)
-    result = nil
+    result = false
     @@contacts.each do |contact|
-      if contact.id == by_id
+      if by_id == contact.id
         result = contact
       end
     end
+    puts "Invalid entry" if result == false
     return result
   end
 
@@ -96,7 +97,7 @@ class Contact
       elsif attribute == "last name"
         puts "Enter new last name:"
         value = gets.chomp
-        last_name = valu
+        last_name = value
       elsif attribute == "email"
         puts "Enter new e-mail:"
         value = gets.chomp
@@ -158,6 +159,9 @@ class Contact
         end
       end
       puts "No results found"
+      return false
+    else
+      puts "Invalid entry of attribute."
       return false
     end
   end
