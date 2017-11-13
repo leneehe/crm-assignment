@@ -1,4 +1,3 @@
-require 'pry'
 require_relative 'contact'
 class CRM
 @@current_contact = []
@@ -46,7 +45,12 @@ class CRM
     print 'Enter a Note: '
     note = gets.chomp
 
-    Contact.create(first_name, last_name, email, note)
+    Contact.create(
+      first_name: first_name,
+      last_name:  last_name,
+      email:      email,
+      note:       note
+    )
   end
 
   def modify_existing_contact
