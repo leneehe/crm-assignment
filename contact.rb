@@ -196,3 +196,8 @@ class Contact < ActiveRecord::Base
   # Feel free to add other methods here, if you need them.
 
 end
+
+Contact.auto_upgrade!
+at_exit do
+  ActiveRecord::Base.connection.close
+end
