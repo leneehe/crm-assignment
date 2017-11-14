@@ -28,7 +28,7 @@ class CRM
     when 3 then delete_contact
     when 4 then display_all_contacts
     when 5 then search_by_attribute
-    when 6 then exit
+    when 6 then abort('Goodbye!')
     end
   end
 
@@ -55,13 +55,20 @@ class CRM
 
   def modify_existing_contact
     puts "Which contact would you like to modify?"
-    mod_contact = false
-    until mod_contact != false
+    mod_contact = nil
+    until mod_contact != nil
       display_all_contacts
       puts "Enter 'id' number you would like to modify"
       prompt = gets.chomp.to_i
-      mod_contact = Contact.find(prompt)
+
+      Contact.all.each do |c|
+        if c.id == prompt
+          mod_contact = Contact.find(prompt)
+        end
+      end
+      puts "Id does not exist!"
     end
+
     @@current_contact = mod_contact
     prompt = nil
     until prompt == 'y' || prompt =='n'
@@ -69,8 +76,38 @@ class CRM
       prompt = gets.chomp
     end
     if prompt == 'y'
-      @@current_contact.update
+
+      puts "Do you wish to update 'first name', 'last name', 'email', or 'note' for #{@@current_contact.full_name}?"
+      attribute = gets.chomp
+      # check for valid user input
+      until attribute == "first name" || attribute == "last name" || attribute == "email" || attribute == "note"
+        puts "Invalid entry. Type 'first name', 'last name', 'email', or 'note'."
+        attribute = gets.chomp
+      end
+
+      if attribute == "first name"
+        puts "Enter new first name:"
+        value = gets.chomp
+        @@current_contact.first_name = value
+      elsif attribute == "last name"
+        puts "Enter new last name:"
+        value = gets.chomp
+        @@current_contact.last_name = value
+      elsif attribute == "email"
+        puts "Enter new e-mail:"
+        value = gets.chomp
+        @@current_contact.email = value
+      elsif attribute == "note"
+        puts "Enter new note:"
+        value = gets.chomp
+        @@current_contact.note = value
+      else
+        puts "Invalid entry"
+      end
+
+      @@current_contact.save
       puts "Saved!"
+
     end
   end
 
@@ -100,24 +137,39 @@ class CRM
   def search_by_attribute
     attribute = nil
     value = nil
-    search_result = nil
+    # search_result = nil
     until attribute == "first name" || attribute == "last name" || attribute == "email" || attribute == "note" || attribute == "id"
       puts "Type 'id', 'first name', 'last name', 'email' or 'note'."
       attribute = gets.chomp
     end
-    puts "What is the #{attribute} you are searching for?"
-    value = gets.chomp
 
     if attribute == 'id'
-      value = value.to_i
-      search_result = Contact.find(value)
+      search_result = nil
+      until search_result != nil
+        display_all_contacts
+        puts "Enter 'id' number"
+        value = gets.chomp.to_i
+
+        Contact.all.each do |c|
+          if c.id == value
+            search_result = Contact.find(value)
+          end
+        end
+
+      end
+
     else
-      search_result = Contact.find_by(attribute, value)
+      puts "What is the #{attribute} you are searching for?"
+      value = gets.chomp
+      attribute.gsub!(' ', '_')
+      search_result = Contact.find_by(attribute => value)
     end
 
-    if search_result != false
+    if search_result != nil
       puts "#{search_result.id} | #{search_result.full_name} | #{search_result.email} | #{search_result.note}"
       @@current_contact = search_result
+    else
+      puts "No matched result found."
     end
   end
 
